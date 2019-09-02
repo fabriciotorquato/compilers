@@ -76,16 +76,6 @@ class Tokenizer:
         """Metodo responsavel pela converção do array para o json formatada."""
         return [elem.getFormmated() for elem in array_token]
 
-    def __getTiposPalavra(self, text):
-        """Metodo responsavel pela sub-divisão entre as palvaras reservadas, numero e identificadores."""
-        if(text.isnumeric()):
-            return Token('numero', text)
-        elif(text == "Sim" or text == "Nao"):
-            return Token('logico', text)
-        elif(text[0].isupper() or text == "se" or text == "enquanto" or text == "retorna"):
-            return Token("reservado", text)
-        return Token("identificador", text)
-
     def __removeIdentacao(self):
         """Metodo responsavel pela remoção do espaço adicionado na identação dentro dos '{' '}' """
         if(len(self.pilha) > 1 and self.pilha[-2] == "{" and self.pilha[-1] == " "):
@@ -101,19 +91,53 @@ class Tokenizer:
         if(char in "@"):
             return self.__getDesconhecido(char)
 
-    def __getTokenDesconhecido(self, char):
-        """Metodo responsavel pela criação do token de desconhecido."""
-        return Token("desconhecido", char)
-
     def __isOperadores(self, char):
         """Metodo responsavel pela validação se o caracter é um operadores de atribuição da linguagem."""
         return len(self.pilha) > 0 and self.pilha[-1] == ":" and char == ":"
 
+    def __isDelimitadores(self, char):
+        """Metodo responsavel pela validação se o caracter é um delimitador da linguagem."""
+        return char in r"(){},"
+
+    def __isDelimitadoresTexto(self, char):
+        """Metodo responsavel pela validação se o caracter é um delimitador de texto da linguagem."""
+        return char in r"'"
+
+    def __isIfOperadores(self, char):
+        """Metodo responsavel pela checagem se o operador é de atirbuição ou delimitador da linguagem."""
+        return char == ":"
+
+    def __isOperadoresMatematicos(self, char):
+        """Metodo responsavel pela validação se o caracter é um operador matematico da linguagem."""
+        return char in "<>+="
+
+    def __isQuebraLinha(self, char):
+        """Metodo responsavel pela validação se o caracter é uma quebra de linha da linguagem."""
+        return char == r'\n'
+
+    def __isSpace(self, char):
+        """Metodo responsavel pela validação se o caracter é um espaço em branco não utilizado por texto ou comentario."""
+        return char == " " and not self.is_comentario and not self.is_texto
+
+    def __isComentario(self, char):
+        """Metodo responsavel pela validação se um inicio de comentario."""
+        return len(self.pilha) > 0 and self.pilha[-1] == '-' and char == '-'
+
+    def __getTokenDesconhecido(self, char):
+        """Metodo responsavel pela criação do token de desconhecido."""
+        return Token("desconhecido", char)
+
+    def __getQuebraLinha(self, char):
+        """Metodo responsavel pela criação do token de quebra de linha."""
+        return Token("quebra-linha", char)
+
     def __getOperadores(self, char):
+        """Metodo responsavel pela criação dos tokens de atribuição."""
         if(char == ':'):
             return Token('atribuicao', '::')
 
     def __getOperadoresMatematicos(self, char):
+        """Metodo responsavel pela criação dos tokens de operadores matematicos."""
         if(char == '<'):
             return Token('operador-menor', char)
         elif(char == '>'):
@@ -122,53 +146,46 @@ class Tokenizer:
             return Token('operador-mais', char)
         elif(char == '='):
             return Token('operador-igual', char)
-
-    def __isDelimitadores(self, char):
-        return char in r"(){},"
-
-    def __isDelimitadoresTexto(self, char):
-        return char in r"'"
-
-    def __isIfOperadores(self, char):
-        return char == ":"
-
-    def __isOperadoresMatematicos(self, char):
-        return char in "<>+="
-
-    def __isQuebraLinha(self, char):
-        return char == r'\n'
-
-    def __isSpace(self, char):
-        return char == " " and not self.is_comentario and not self.is_texto
-
-    def __isComentario(self, char):
-        return len(self.pilha) > 0 and self.pilha[-1] == '-' and char == '-'
-
-    def __getQuebraLinha(self, char):
-        return Token("quebra-linha", char)
+    
+    def __getTiposPalavra(self, text):
+        """Metodo responsavel pela sub-divisão entre as palvaras reservadas, numero e identificadores."""
+        if(text.isnumeric()):
+            return Token('numero', text)
+        elif(text == "Sim" or text == "Nao"):
+            return Token('logico', text)
+        elif(text[0].isupper() or text == "se" or text == "enquanto" or text == "retorna"):
+            return Token("reservado", text)
+        return Token("identificador", text)
 
     def __getDesconhecido(self, char):
+        """Metodo responsavel pela criação do token de erro."""
         return ErrorToken("simbolo, {}, desconhecido".format(char))
 
     def __unionIdentificadores(self):
+        """Metodo responsavel pela possiveis uniones de mais mais de um token, dependedo da regra."""
         new_tokens = []
         cont_pass = 0
         if(len(self.tokens) > 3):
             for index, _ in enumerate(self.tokens[:-1]):
                 if((index+2) < len(self.tokens) and self.tokens[index].text.text == "se" and self.tokens[index+1].text.text == "nao"):
-                    if(self.tokens[index+2].text.text == "se"):
+                    """ Validação utiliza uma comparaão se existe a ordem dos tokens SE, NAO e SE, se existir, 
+                    ele ira criar um novo utilizando o 'se nao se' """
+                    if(self.tokens[index+2].text.text == "se"):                        
+                        """Comparação utilizada na regra do 'SE NAO SE'."""
                         token_old = self.tokens[index]
                         token = Token("reservado", "se nao se")
                         token.locale = token_old.locale
                         new_tokens.append(token)
                         cont_pass += 2
                     else:
+                        """Comparação utilizada na regra do 'SE NAO'."""
                         token_old = self.tokens[index]
                         token = Token("reservado", "se nao")
                         token.locale = token_old.locale
                         new_tokens.append(token)
                         cont_pass += 1
                 elif((index+2) < len(self.tokens) and self.tokens[index].text.text == "!" and self.tokens[index+1].text.text == "="):
+                    """Comparação utilizada na regra do '!='."""
                     token_old = self.tokens[index]
                     token = Token("operador-diferente", "!=")
                     token.locale = token_old.locale
@@ -181,6 +198,7 @@ class Tokenizer:
         return new_tokens
 
     def __getDelimitadores(self, char):
+        """Metodo responsavel pela crição dos token delimitadores da linguagem."""
         if(char == '('):
             return Token("abre-parenteses", char)
         elif(char == ')'):
@@ -195,15 +213,19 @@ class Tokenizer:
             return Token("virgula", char)
 
     def __getTexto(self):
+        """Metodo responsavel pela crição do token de texto."""
         jail = self.pilha[self.index_buffer_string:]
         jail = "".join(jail)
         self.pilha = self.pilha[:-len(jail)]
         return Token("texto", jail)
 
     def __getCadeiaCaracteresComentario(self):
+        """Metodo responsavel pela crição do token de comentario."""
         jail = []
         pilha_reverse = self.pilha[::-1]
 
+        """ Metodo utiliza uma busca na pilha procurando o 
+        caracter de inicio de comentario, a pilha necessitou ser invertida apenas para facilitar o desenvolvimento """
         for index, char in enumerate(pilha_reverse[:-1]):
             if(pilha_reverse[index] == "-" and pilha_reverse[index+1] == "-"):
                 jail.append(pilha_reverse[index])
@@ -217,9 +239,14 @@ class Tokenizer:
         return Token("comentario", jail)
 
     def __getCadeiaCaracteres(self):
+        """Metodo responsavel pela crição do token de cadeia de caracteres, sendo diferenciado 
+        pelo retorno do metodo de Palvras."""
         jail = []
 
+        """ Metodo utiliza atraves da busca na pilha por caracteres delimitadores,
+         espaco ou operadores de atribuição, para representar o inicio de umTEXTO"""
         for char in self.pilha[::-1]:
+            
             if(self.__isDelimitadores(char) or char == " " or char == ":"):
                 break
             else:
@@ -234,6 +261,8 @@ class Tokenizer:
             return self.__getTiposPalavra(jail)
 
     def __generateCadeiaCaracteres(self):
+        """Metodo responsavel pela geração dos tipos de cadeias de caracteres 
+        (Comentario | Texto | Identificadores | Reservados)."""
         if(self.is_comentario):
             self.is_comentario = False
             token = self.__getCadeiaCaracteresComentario()
@@ -244,47 +273,63 @@ class Tokenizer:
             self.tokens.append(token)
 
     def __generateDelimitadores(self, char):
+        """Metodo responsavel pela geração dos delimitadores"""
         token = self.__getDelimitadores(char)
         token.setLocale(self.index, self.line)
         self.tokens.append(token)
 
     def __generateOperadores(self, char):
+        """Metodo responsavel pela geração dos operadores de atribuição"""
         token = self.__getOperadores(char)
         token.setLocale(self.index, self.line)
         self.tokens.append(token)
         self.pilha = self.pilha[:-1]
 
     def __generateOperadoresMatematicos(self, char):
+        """Metodo responsavel pela geração dos operadores matematicos"""
         token = self.__getOperadoresMatematicos(char)
         token.setLocale(self.index, self.line)
         self.tokens.append(token)
         self.pilha = self.pilha[:-1]
 
     def __generateCadeiaCaracteresComDelimitadores(self, char):
+        """Metodo responsavel pela geração da cadeia de caracteres que está seguida de um delimitador"""
         self.__generateCadeiaCaracteres()
         self.__generateDelimitadores(char)
 
     def __generateCadeiaCaracteresComOperadores(self, char):
+        """Metodo responsavel pela geração da cadeia de caracteres que está seguida de um operador de atribuição"""
         self.__generateCadeiaCaracteres()
         self.__generateOperadores(char)
 
     def __generateCadeiaCaracteresComOperadoresMatematicos(self, char):
+        """Metodo responsavel pela geração da cadeia de caracteres que está seguida de um operador matematico"""
         self.__generateCadeiaCaracteres()
         self.__generateOperadoresMatematicos(char)
 
     def __generateCadeiaCaracteresTexto(self, char):
+        """Metodo responsavel pela geração da cadeia de carcteres"""
         token = self.__getTexto()
         if(token is not None):
             token.setLocale(self.index-len(str(token.text.text))+1, self.line)
             self.tokens.append(token)
+    
+    def __generateQuebraLinha(self):
+        """Metodo responsavel pela geração da quebra de linhas"""
+        self.__generateCadeiaCaracteres()
+        token = self.__getQuebraLinha("\n")
+        token.setLocale(self.index, self.line)
+        self.tokens.append(token)
 
     def getTokens(self):
+        """Metodo central responsavel pelo fluxo da Tokenizer"""
 
         self.__resetAttributes()
 
         for char_lines in self.program.splitlines():
             for char in char_lines:
 
+                """Primeira Validação se caracter é valido"""
                 erro_token = self.__isValidedCaracteres(char)
                 if(erro_token is not None):
                     token = self.__getTokenDesconhecido(char)
@@ -293,16 +338,22 @@ class Tokenizer:
                     erro_token.setLocale(self.index, self.line)
                     self.erros.append(erro_token)
                 else:
+
                     if(self.__validedEscape(char)):
+                        """Segunda Validação se caracter é de escape"""
                         self.is_escape = True
                         self.pilha.append(char)
                     elif(self.is_escape):
                         self.is_escape = False
                         self.pilha.append(char)
                     else:
+
                         if(self.__isComentario(char)):
+                            """Terceira Validação se caracter é de inicio de comentario"""
                             self.is_comentario = True
+
                         if(not self.is_comentario and not self.is_texto and self.__isDelimitadoresTexto(char)):
+                            """Quarta Validação se caracter é de inicio de Texto"""
                             self.is_texto = True
                             self.index_buffer_string = len(self.pilha)
                             self.pilha.append(char)
@@ -313,10 +364,15 @@ class Tokenizer:
                         elif(self.is_texto):
                             self.pilha.append(char)
                         else:
+
                             if(self.__isIfOperadores(char)):
+                                """Quinta Validação se caracter é um possivel operador de atribuição"""
+
                                 if(self.if_operadores):
                                     self.if_operadores = False
+
                                     if(self.__isOperadores(char)):
+                                        """Se for de operador de atribuição utilizar fluxo de ::"""
                                         pilha_antiga = self.pilha.pop()
                                         self.pilha = self.pilha[:-1]
                                         self.index -= 1
@@ -324,14 +380,18 @@ class Tokenizer:
                                             pilha_antiga)
                                         self.index += 1
                                     else:
+                                        """Se não utilizar fluxo delimitadores"""
                                         pilha_antiga = self.pilha.pop()
                                         self.pilha = self.pilha[:-1]
                                         self.__generateCadeiaCaracteresComDelimitadores(
                                             pilha_antiga)
+
                                 else:
                                     self.pilha.append(char)
                                     self.if_operadores = True
+
                             elif(self.if_operadores):
+                                """Sexta Validação se caracter é um demilitador"""
                                 pilha_antiga = self.pilha.pop()
                                 self.pilha = self.pilha[:-1]
                                 self.index -= 1
@@ -340,25 +400,30 @@ class Tokenizer:
                                 self.index += 1
                                 self.if_operadores = False
 
+                            """ Se caracter não se encaixar na validação que necessitam validar 
+                            junto com a pilha, ele será validado novamente como um dos TIPOS abaixo """
+
                             if(self.__isDelimitadores(char)):
+                                """Primeira Validação se caracter é um demilitador"""
                                 self.__generateCadeiaCaracteresComDelimitadores(
                                     char)
                             elif(self.__isOperadoresMatematicos(char)):
+                                """Segunda Validação se caracter é um operador matematico"""
                                 self.__generateCadeiaCaracteresComOperadoresMatematicos(
                                     char)
                             elif(self.__isSpace(char)):
+                                """Terceira Validação se caracter é um espaço não utilizado em Texto ou comentario"""
                                 self.__generateCadeiaCaracteres()
                             else:
                                 self.pilha.append(char)
 
-                self.index += 1
+                """Remove Identação dos '{' '}'"""
                 self.__removeIdentacao()
+                self.index += 1
 
-            self.__generateCadeiaCaracteres()
-
-            token = self.__getQuebraLinha("\n")
-            token.setLocale(self.index, self.line)
-            self.tokens.append(token)
+            """Gerar quebra de linha """
+            self.__generateQuebraLinha()
+            
             self.line += 1
             self.index = 0
 
@@ -369,8 +434,6 @@ class Tokenizer:
 def analisadorLexico(programa):
     tokenizer = Tokenizer(programa)
     return tokenizer.getTokens()
-# ALERTA: Nao modificar o codigo fonte apos esse aviso
-
 # ALERTA: Nao modificar o codigo fonte apos esse aviso
 
 
