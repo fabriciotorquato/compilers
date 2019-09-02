@@ -146,7 +146,7 @@ class Tokenizer:
             return Token('operador-mais', char)
         elif(char == '='):
             return Token('operador-igual', char)
-    
+
     def __getTiposPalavra(self, text):
         """Metodo responsavel pela sub-divisão entre as palvaras reservadas, numero e identificadores."""
         if(text.isnumeric()):
@@ -170,7 +170,7 @@ class Tokenizer:
                 if((index+2) < len(self.tokens) and self.tokens[index].text.text == "se" and self.tokens[index+1].text.text == "nao"):
                     """ Validação utiliza uma comparaão se existe a ordem dos tokens SE, NAO e SE, se existir, 
                     ele ira criar um novo utilizando o 'se nao se' """
-                    if(self.tokens[index+2].text.text == "se"):                        
+                    if(self.tokens[index+2].text.text == "se"):
                         """Comparação utilizada na regra do 'SE NAO SE'."""
                         token_old = self.tokens[index]
                         token = Token("reservado", "se nao se")
@@ -246,7 +246,7 @@ class Tokenizer:
         """ Metodo utiliza atraves da busca na pilha por caracteres delimitadores,
          espaco ou operadores de atribuição, para representar o inicio de umTEXTO"""
         for char in self.pilha[::-1]:
-            
+
             if(self.__isDelimitadores(char) or char == " " or char == ":"):
                 break
             else:
@@ -313,7 +313,7 @@ class Tokenizer:
         if(token is not None):
             token.setLocale(self.index-len(str(token.text.text))+1, self.line)
             self.tokens.append(token)
-    
+
     def __generateQuebraLinha(self):
         """Metodo responsavel pela geração da quebra de linhas"""
         self.__generateCadeiaCaracteres()
@@ -423,7 +423,7 @@ class Tokenizer:
 
             """Gerar quebra de linha """
             self.__generateQuebraLinha()
-            
+
             self.line += 1
             self.index = 0
 
