@@ -1,0 +1,156 @@
+{'arvore': [
+        {'tipo': 'regra', 'grupo': 'programa', 'ramo': []
+        },
+        {'tipo': 'regra', 'grupo': 'funcao', 'ramo': [
+                {'tipo': 'regra', 'grupo': 'fecha-chaves', 'ramo': [
+                        {'tipo': 'token', 'folha': {'grupo': 'fecha-chaves', 'texto': '
+                            }', 'local': {'linha': 4, 'indice': 0
+                            }
+                        }
+                    }
+                ]
+            },
+            {'tipo': 'regra', 'grupo': 'corpo', 'ramo': []
+            },
+            {'tipo': 'regra', 'grupo': 'abre-chaves', 'ramo': [
+                    {'tipo': 'token', 'folha': {'grupo': 'abre-chaves', 'texto': '{', 'local': {'linha': 3, 'indice': 47
+                                }
+                            }
+                        }
+                    ]
+                },
+                {'tipo': 'regra', 'grupo': 'atribuicao', 'ramo': [
+                        {'tipo': 'token', 'folha': {'grupo': 'atribuicao', 'texto': ': :', 'local': {'linha': 3, 'indice': 45
+                                }
+                            }
+                        }
+                    ]
+                },
+                {'tipo': 'regra', 'grupo': 'retorno', 'ramo': [
+                        {'tipo': 'regra', 'grupo': 'tipo', 'ramo': [
+                                {'tipo': 'regra', 'grupo': 'Numero', 'ramo': [
+                                        {'tipo': 'token', 'folha': {'grupo': 'Numero', 'texto': 'Numero', 'local': {'linha': 3, 'indice': 39
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {'tipo': 'regra', 'grupo': 'dois-pontos', 'ramo': [
+                                {'tipo': 'token', 'folha': {'grupo': 'dois-pontos', 'texto': ':', 'local': {'linha': 3, 'indice': 38
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {'tipo': 'regra', 'grupo': 'parametros', 'ramo': [
+                        {'tipo': 'regra', 'grupo': 'fecha-parenteses', 'ramo': [
+                                {'tipo': 'token', 'folha': {'grupo': 'fecha-parenteses', 'texto': ')', 'local': {'linha': 3, 'indice': 37
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {'tipo': 'regra', 'grupo': 'list', 'ramo': [
+                                {'tipo': 'regra', 'grupo': 'list-linha', 'ramo': [
+                                        {'tipo': 'regra', 'grupo': 'list', 'ramo': [
+                                                {'tipo': 'regra', 'grupo': 'list-linha', 'ramo': []
+                                                },
+                                                {'tipo': 'regra', 'grupo': 'tipo', 'ramo': [
+                                                        {'tipo': 'regra', 'grupo': 'Texto', 'ramo': [
+                                                                {'tipo': 'token', 'folha': {'grupo': 'Texto', 'texto': 'Texto', 'local': {'linha': 3, 'indice': 32
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {'tipo': 'regra', 'grupo': 'dois-pontos', 'ramo': [
+                                                        {'tipo': 'token', 'folha': {'grupo': 'dois-pontos', 'texto': ':', 'local': {'linha': 3, 'indice': 31
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {'tipo': 'regra', 'grupo': 'identificador', 'ramo': [
+                                                        {'tipo': 'token', 'folha': {'grupo': 'identificador', 'texto': 'item', 'local': {'linha': 3, 'indice': 27
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {'tipo': 'regra', 'grupo': 'virgula', 'ramo': [
+                                                {'tipo': 'token', 'folha': {'grupo': 'virgula', 'texto': ',', 'local': {'linha': 3, 'indice': 26
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {'tipo': 'regra', 'grupo': 'tipo', 'ramo': [
+                                        {'tipo': 'regra', 'grupo': 'Logica', 'ramo': [
+                                                {'tipo': 'token', 'folha': {'grupo': 'Logica', 'texto': 'Logica', 'local': {'linha': 3, 'indice': 20
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {'tipo': 'regra', 'grupo': 'dois-pontos', 'ramo': [
+                                        {'tipo': 'token', 'folha': {'grupo': 'dois-pontos', 'texto': ':', 'local': {'linha': 3, 'indice': 19
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                {'tipo': 'regra', 'grupo': 'identificador', 'ramo': [
+                                        {'tipo': 'token', 'folha': {'grupo': 'identificador', 'texto': 'valor', 'local': {'linha': 3, 'indice': 14
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {'tipo': 'regra', 'grupo': 'abre-parenteses', 'ramo': [
+                                {'tipo': 'token', 'folha': {'grupo': 'abre-parenteses', 'texto': '(', 'local': {'linha': 3, 'indice': 13
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {'tipo': 'regra', 'grupo': 'Funcao', 'ramo': [
+                        {'tipo': 'token', 'folha': {'grupo': 'Funcao', 'texto': 'Funcao', 'local': {'linha': 3, 'indice': 7
+                                }
+                            }
+                        }
+                    ]
+                },
+                {'tipo': 'regra', 'grupo': 'dois-pontos', 'ramo': [
+                        {'tipo': 'token', 'folha': {'grupo': 'dois-pontos', 'texto': ':', 'local': {'linha': 3, 'indice': 6
+                                }
+                            }
+                        }
+                    ]
+                },
+                {'tipo': 'regra', 'grupo': 'identificador', 'ramo': [
+                        {'tipo': 'token', 'folha': {'grupo': 'identificador', 'texto': 'inicio', 'local': {'linha': 3, 'indice': 0
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ], 'erros': []
+}
